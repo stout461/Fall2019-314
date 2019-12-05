@@ -1,6 +1,6 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.math.BigInteger;
 
 /*
  *  Desc: This class generates primes, twin primes, and hexagon crosses using BigInteger data types.
@@ -29,19 +29,19 @@ public class Primes {
 	// Adds a pair of BigIntegers that represent a Hexagonal Cross.
 	public void addCross(Pair<BigInteger> pair)
 	{
-
+		crossList.add(pair);
 	}
 	
 	// Empties the list of primes.
 	public void clearPrimes()
 	{
-	
+		primeList.clear();
 	}
 	
 	// Empties the list of crosses.
 	public void clearCrosses()
 	{
-
+		crossList.clear();
 	}
 	
 	// Output the prime list. Each prime should be on a separate line and the total number of primes should be on the following line.
@@ -132,34 +132,132 @@ public class Primes {
 	// Count the number of digits in the last (and thus largest) prime.
 	public int sizeofLastPrime()
 	{
+		int count = 0;
+		BigInteger num = primeList.get(primeList.size()-1); // num is the number at the end of the list 
+		while(num.compareTo(BigInteger.ONE) >= 0) {
+			num = num.divide(BigInteger.TEN); // just divide by 10 to get rid of a digit 
+			count++; // keep track of each digit we get rid of
+		}
+		return count;
 	}
 	
 	// Count the number of digits in the two entries in the last (and thus largest) hexagon cross
 	public Pair<Integer> sizeofLastCross()
 	{
+		Integer count1 = 1;
+		BigInteger num1 = crossList.get(crossList.size()-1).left(); // last number in the list 
+		while(num1.compareTo(BigInteger.ONE) >= 0) {
+			num1 = num1.divide(BigInteger.TEN); // divide by ten to remove a digit 
+			count1++; // keep track of the digits we get rid of 
+		}
+	
+		Integer count2 = 1;
+		if(crossList.size( ) != 0) {
+		BigInteger num2 = crossList.get(crossList.size()-1).right();
+		while(num2.compareTo(BigInteger.ONE) >= 0) {
+			num2 = num2.divide(BigInteger.TEN);
+			count2++;
+		}
+		Pair<Integer> temp = new Pair<Integer>(count1,count2);
+		
+		return temp;
+		}
+		else { 
+			Pair<Integer> temp = new Pair<Integer>(0, 0);
+			return temp;
+		}
 	}
 	
 	// Return the number of primes
 	public int primeCount()
 	{
+		return primeList.size();
 	}
 	
 	// Return the number of crosses.
 	public int crossesCount()
 	{
+		return crossList.size();
 	}
 	
 	public class IterablePrimes implements Iterable<BigInteger>
-	{		
+	{
+		int current = 0;
+		
+		public boolean hasNext() {
+			if(current < primeList.size()) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		public BigInteger next() {
+			if(!hasNext()) {
+				return null;
+			}
+			else {
+				BigInteger temp = primeList.get(current);
+				current++;
+				return temp;
+			}
+		}
+		
+		public Iterator<BigInteger> iterator() {
+			// TODO Auto-generated method stub
+			return primeList.iterator(); 
+		}		
 	}
 	
 	public IterablePrimes iteratePrimes() { return new IterablePrimes();}
 
 	public class IterableCrosses implements Iterable<BigInteger>
 	{		
+		private int current = 0;
+		
+		
+		public boolean hasNext() {
+			if(current < crossList.size()*2) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		public BigInteger next() {
+			if(!hasNext()) {
+				return null;
+			}
+			else if(current%2 ==0) {
+				BigInteger temp = crossList.get(current).left(); 
+				current++;
+				return temp;
+			}
+			else {
+				BigInteger temp = crossList.get(current).right();
+				current++;
+				return temp;
+			}
+		}
+		
+		@Override
+		public Iterator<BigInteger> iterator() {
+			int i = 0;
+			int j = 0;
+			ArrayList<BigInteger> cross = new ArrayList<BigInteger>();
+			while (j < crossList.size()) {
+				cross.add(i,crossList.get(j).left());
+				cross.add(i+1,crossList.get(j).right());
+				i+=2;
+				j++;
+			}
+			return cross.iterator();
+		}
+		
+	
 	}
 	
-	public IterableCrosses iterateCrosses() { return new IterablePrimes();}
-
+	public IterableCrosses iterateCrosses() { return new IterableCrosses();}
+ 
 
 }
